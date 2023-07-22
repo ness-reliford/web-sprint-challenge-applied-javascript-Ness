@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const Card = (article) => {
   // TASK 5
   // ---------------------
@@ -17,6 +19,33 @@ const Card = (article) => {
   //   </div>
   // </div>
   //
+
+  const articleCard = document.createElement("div");
+  const headlineDiv = document.createElement('div');
+  const author = document.createElement('div');
+  const imgContainer = document.createElement('div');
+  const img = document.createElement('img');
+  const bySpan = document.createElement('span');
+
+  articleCard.classList.add("card");
+  headlineDiv.classList.add('headline');
+  author.classList.add('author');
+  imgContainer.classList.add('img-container');
+
+  headlineDiv.textContent = article.headline
+  bySpan.textContent = `By ${article.authorName}`
+  img.src = article.authorPhoto;
+
+  articleCard.appendChild(headlineDiv);
+  articleCard.appendChild(author);
+  author.appendChild(imgContainer);
+  imgContainer.appendChild(img);
+  author.appendChild(bySpan);
+
+  articleCard.addEventListener("click", () => {
+    console.log(article.headline)
+  })
+  return articleCard
 }
 
 const cardAppender = (selector) => {
@@ -28,6 +57,36 @@ const cardAppender = (selector) => {
   // Create a card from each and every article object in the response, using the Card component.
   // Append each card to the element in the DOM that matches the selector passed to the function.
   //
+  
+  axios.get("http://localhost:5001/api/articles")
+  .then(res => {
+    
+    const data = res.data
+    const articlesObject = data.articles
+    // const bootstrap = articlesObject.bootstrap
+    // const javascript = articlesObject.javascript
+    // const jquery = articlesObject.jquery
+    // const node = articlesObject.node
+    // const technology = articlesObject.technology
+    
+    console.log(articlesObject)
+
+    for (const topic in articlesObject) {
+      articlesObject[topic].forEach(article => {
+        const { authorName, authorPhoto, headline } = article;
+        const card = Card(article)
+        document.querySelector(selector).appendChild(card);
+      })
+    }
+    
+    
+  })
+  .catch(err => {
+    console.error("Error:", err)
+  })
+
 }
 
 export { Card, cardAppender }
+
+
